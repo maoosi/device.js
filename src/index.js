@@ -1,19 +1,47 @@
+import debounce from 'lodash.debounce'
+import mitt from 'mitt'
 import ua from './ua.js'
 
 export default class {
     
-    constructor () {
+    constructor (options = {}) {
+        this.options = {
+            autoUpdateOnResize: options.autoUpdateOnResize || true
+        }
+
+        this.emitter = mitt()
+        this.init()
+
+        return this
+    }
+
+    init () {
+        this._saveHeight()
+        this._bindEvents()
         this.detect()
+
+        return this
+    }
+
+    destroy () {
+        this._unbindEvents()
+
+        return this
     }
 
     detect () {
-        this.clientUA = navigator.userAgent.toLowerCase()
         this.detected = []
-        this._saveHeight()
+        this.clientUA =
+            navigator.userAgent.toLowerCase() ||
+            navigator.vendor.toLowerCase() ||
+            window.opera.toLowerCase()
+        
         this._detectFromUa('browser')
         this._detectFromUa('mobileOs')
         this._detectFromUa('type', { name: 'desktop' })
         this._detectOrientation()
+
+        return this
     }
 
     get (key) {
@@ -60,6 +88,21 @@ export default class {
         }
     }
 
+    on(...args) { return this.emitter.on(...args) }
+    off(...args) { return this.emitter.off(...args) }
+
+    _bindEvents () {
+        this.resize = debounce(() => {
+            this._resize()
+        }, 100)
+
+        window.addEventListener('resize', this.resize, false)
+    }
+
+    _unbindEvents () {
+        window.removeEventListener('resize', this.resize, false)
+    }
+
     _saveHeight () {
         this.defaultHeight = window.innerHeight
     }
@@ -91,6 +134,7 @@ export default class {
     }
 
     _detectOrientation () {
+        let previousOrientation = this.detected['orientation']
         this.detected['orientation'] = 'landscape'
 
         if (
@@ -98,6 +142,10 @@ export default class {
             window.matchMedia('(orientation: portrait)').matches
         ) {
             this.detected['orientation'] = 'portrait'
+        }
+
+        if (previousOrientation !== this.detected['orientation']) {
+            this.emitter.emit('orientationUpdate', this.detected['orientation'])
         }
     }
 
@@ -111,7 +159,12 @@ export default class {
     }
 
     _resize () {
-        
+        if (this.options.autoUpdateOnResize) {
+            this.detect()
+            this.emitter.emit('update')
+        } else {
+            this._detectOrientation()
+        }
     }
 
 }

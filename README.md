@@ -33,8 +33,9 @@ device.get('orientation')
 device.detect() // Force re-detection
 
 // Events
+device.on('orientationUpdate', (orientation) => {})
+device.on('update', () => {})
 // wip -> device.on('virtualKeyboardUpdate', (state) => {})
-// wip -> device.on('orientationUpdate', (orientation) => {})
 
 // Browser name
 device.isBrowser('chrome')

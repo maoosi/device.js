@@ -13,7 +13,9 @@
 <script>
 import Device from '../src/index.js'
 
-const device = new Device()
+const device = new Device({
+    autoUpdateOnResize: true
+})
 
 export default {
     data () {
@@ -27,12 +29,25 @@ export default {
         }
     },
     mounted () {
-        this.browser = device.get('browser')
-        this.browserName = device.get('browser.name')
-        this.browserVersion = device.get('browser.version')
-        this.mobileOs = device.get('mobileOs')
-        this.type = device.get('type')
-        this.orientation = device.get('orientation')
+        device.on('orientationUpdate', (orientation) => {
+            this.orientation = orientation
+        })
+
+        device.on('update', () => {
+            this.detect()
+        })
+
+        this.detect()
+    },
+    methods: {
+        detect () {
+            this.browser = device.get('browser')
+            this.browserName = device.get('browser.name')
+            this.browserVersion = device.get('browser.version')
+            this.mobileOs = device.get('mobileOs')
+            this.type = device.get('type')
+            this.orientation = device.get('orientation')
+        }
     }
 }
 </script>
