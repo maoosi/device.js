@@ -4,7 +4,7 @@
 
 > 🎲 JavaScript toolkit library to read device and browser information.
 
-## Features
+## Detected information
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
 - Supported features `pwa, webp, webrtc`
