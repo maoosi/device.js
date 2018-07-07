@@ -82,7 +82,11 @@ export default class {
     isSupported (feature) {
         switch (feature) {
             case 'webp':
-                return this._isWebpSupported()
+                return Boolean(this._isWebpSupported())
+            case 'webrtc':
+                return Boolean(this._isWebRtcSupported())
+            case 'webgl':
+                return Boolean(this._isWebGlSupported())
             default:
                 return false
         }
@@ -158,10 +162,28 @@ export default class {
             && canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
     }
 
+    _isWebRtcSupported () {
+        return navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia ||
+            window.RTCPeerConnection
+    }
+
+    _isWebGlSupported () {
+        let canvas = document.createElement('canvas')
+        let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+        return gl && gl instanceof WebGLRenderingContext
+    }
+
     _resize () {
         if (this.options.autoUpdateOnResize) {
+            let previousDetected = this.detected
             this.detect()
-            this.emitter.emit('update')
+
+            if (previousDetected !== this.detected) {
+                this.emitter.emit('update')
+            }
         } else {
             this._detectOrientation()
         }

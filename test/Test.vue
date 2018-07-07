@@ -3,9 +3,12 @@
         <ul>
             <li><strong>Browser name:</strong> {{ browserName || 'n/a' }}</li>
             <li><strong>Browser version:</strong> {{ browserVersion || 'n/a' }}</li>
-            <li><strong>Mobile OS:</strong> {{ mobileOs || 'n/a' }}</li>
+            <li><strong>Mobile OS:</strong> {{ mobileOs || 'none' }}</li>
             <li><strong>Type:</strong> {{ type || 'n/a' }}</li>
             <li><strong>Orientation:</strong> {{ orientation || 'n/a' }}</li>
+            <li><strong>WebP support:</strong> {{ webp ? 'yes' : 'no' }}</li>
+            <li><strong>WebRTC support:</strong> {{ webrtc ? 'yes' : 'no' }}</li>
+            <li><strong>WebGL support:</strong> {{ webgl ? 'yes' : 'no' }}</li>
         </ul>
     </div>
 </template>
@@ -25,7 +28,10 @@ export default {
             browserVersion: null,
             mobileOs: null,
             type: null,
-            orientation: null
+            orientation: null,
+            webrtc: null,
+            webp: null,
+            webgl: null
         }
     },
     mounted () {
@@ -47,6 +53,9 @@ export default {
             this.mobileOs = device.get('mobileOs')
             this.type = device.get('type')
             this.orientation = device.get('orientation')
+            this.webrtc = device.isSupported('webrtc')
+            this.webp = device.isSupported('webp')
+            this.webgl = device.isSupported('webgl')
         }
     }
 }

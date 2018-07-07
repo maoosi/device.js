@@ -8,7 +8,7 @@
 ## Features detected
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
-- Supported features `pwa, webp, webrtc`
+- Supported features `pwa, webp, webrtc, webgl`
 - Device orientation `portrait, landscape`
 - Mobile OS `android, ios, windows`
 - Virtual keyboard `active, inactive`
@@ -57,8 +57,9 @@ device.isBrowser('phantomjs')
 
 // Supported features
 device.isSupported('webp')
+device.isSupported('webrtc')
+device.isSupported('webgl')
 // wip -> device.isSupported('pwa')
-// wip -> device.isSupported('webrtc')
 
 // Device orientation
 device.isOrientation('portrait')
