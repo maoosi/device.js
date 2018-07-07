@@ -5,7 +5,7 @@
 > 🎲 ES6 toolkit library to detect device and browser information.
 
 
-## Feature detected
+## Features detected
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
 - Supported features `pwa, webp, webrtc`
