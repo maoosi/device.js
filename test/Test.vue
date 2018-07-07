@@ -5,6 +5,7 @@
             <li><strong>Browser version:</strong> {{ browserVersion || 'n/a' }}</li>
             <li><strong>Mobile OS:</strong> {{ mobileOs || 'n/a' }}</li>
             <li><strong>Type:</strong> {{ type || 'n/a' }}</li>
+            <li><strong>Orientation:</strong> {{ orientation || 'n/a' }}</li>
         </ul>
     </div>
 </template>
@@ -21,7 +22,8 @@ export default {
             browserName: null,
             browserVersion: null,
             mobileOs: null,
-            type: null
+            type: null,
+            orientation: null
         }
     },
     mounted () {
@@ -30,6 +32,7 @@ export default {
         this.browserVersion = device.get('browser.version')
         this.mobileOs = device.get('mobileOs')
         this.type = device.get('type')
+        this.orientation = device.get('orientation')
     }
 }
 </script>

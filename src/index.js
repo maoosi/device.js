@@ -9,10 +9,11 @@ export default class {
     detect () {
         this.clientUA = navigator.userAgent.toLowerCase()
         this.detected = []
-
+        this._saveHeight()
         this._detectFromUa('browser')
         this._detectFromUa('mobileOs')
         this._detectFromUa('type', { name: 'desktop' })
+        this._detectOrientation()
     }
 
     get (key) {
@@ -46,6 +47,10 @@ export default class {
         return this.detected && this.detected['mobileOs'].name === name
     }
 
+    isOrientation (orientation) {
+        return this.detected && this.detected['orientation'] === orientation
+    }
+
     isSupported (feature) {
         switch (feature) {
             case 'webp':
@@ -53,6 +58,10 @@ export default class {
             default:
                 return false
         }
+    }
+
+    _saveHeight () {
+        this.defaultHeight = window.innerHeight
     }
 
     _detectFromUa (key, defaultValue = false) {
@@ -81,6 +90,17 @@ export default class {
         }
     }
 
+    _detectOrientation () {
+        this.detected['orientation'] = 'landscape'
+
+        if (
+            (this.isType('mobile') || this.isType('tablet')) &&
+            window.matchMedia('(orientation: portrait)').matches
+        ) {
+            this.detected['orientation'] = 'portrait'
+        }
+    }
+
     _isWebpSupported () {
         let canvas = document.createElement('canvas')
         canvas.width = canvas.height = 1
@@ -91,7 +111,7 @@ export default class {
     }
 
     _resize () {
-
+        
     }
 
 }

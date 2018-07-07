@@ -28,7 +28,7 @@ device.get('browser.name')
 device.get('browser.version')
 device.get('mobileOs')
 device.get('type')
-// wip -> device.get('orientation')
+device.get('orientation')
 // wip -> device.get('virtualKeyboard')
 device.detect() // Force re-detection
 
@@ -60,8 +60,8 @@ device.isSupported('webp')
 // wip -> device.isSupported('webrtc')
 
 // Device orientation
-// wip -> device.isOrientation('portrait')
-// wip -> device.isOrientation('landscape')
+device.isOrientation('portrait')
+device.isOrientation('landscape')
 
 // Mobile Operating System
 device.isMobileOs('android')
