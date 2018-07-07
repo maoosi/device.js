@@ -17,10 +17,9 @@
 ## Getting started
 
 ```javascript
-// Import ES6 library
 import Device from 'device.js'
 
-// Instantiate Device
+// Instantiate library
 const device = new Device()
 
 // Global API methods
