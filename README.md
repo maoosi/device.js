@@ -1,0 +1,69 @@
+# Device.js
+
+⚠️ Work in progress | Not ready for production
+
+> 🎲 JavaScript toolkit library to read devices information such as browser name, browser version, supported features, device orientation, operating system, and virtual keyboard.
+
+
+```javascript
+// Import ES6 library
+import Device from 'device.js'
+
+// Instantiate Device
+const device = new Device()
+
+// Global API methods
+device.get('browser')
+device.get('type')
+device.get('mobileOs')
+// wip -> device.get('orientation')
+// wip -> device.get('supported')
+// wip -> device.get('virtualKeyboard')
+device.detect() // Force re-detection
+
+// Events
+// wip -> device.on('virtualKeyboardUpdate', (state) => {})
+// wip -> device.on('orientationUpdate', (orientation) => {})
+
+// Browser name
+device.isBrowser('chrome')
+device.isBrowser('firefox')
+device.isBrowser('ie')
+device.isBrowser('edge')
+device.isBrowser('opera')
+device.isBrowser('safari')
+device.isBrowser('facebook')
+device.isBrowser('instagram')
+device.isBrowser('phantomjs')
+
+// Browser version
+// wip -> device.isBrowserEq('ie', '8')
+// wip -> device.isBrowserLt('ie', '11.1')
+// wip -> device.isBrowserGt('ie', '8.0.1')
+// wip -> device.isBrowserLtEq('ie', '9')
+// wip -> device.isBrowserGtEq('ie', '9.1')
+
+// Supported features
+// wip -> device.isSupported('pwa')
+// wip -> device.isSupported('webp')
+// wip -> device.isSupported('webrtc')
+
+// Device orientation
+// wip -> device.isOrientation('portrait')
+// wip -> device.isOrientation('landscape')
+
+// Mobile Operating System
+device.isMobileOs('ios')
+device.isMobileOs('android')
+device.isMobileOs('windows')
+
+// Device type
+device.isType('mobile')
+device.isType('tablet')
+device.isType('desktop')
+device.isType('tv')
+
+// Mobile virtual keyboard
+// wip -> device.isVirtualKeyboard('active')
+// wip -> device.isVirtualKeyboard('inactive')
+```
