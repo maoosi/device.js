@@ -67,6 +67,55 @@ export default class {
         return this.detected && this.detected['browser'].name === name
     }
 
+    isBrowserEq (browser, version) {
+        return this._compareBrowser(browser, '===', version)
+    }
+
+    isBrowserLt (browser, version) {
+        return this._compareBrowser(browser, '<', version)
+    }
+
+    isBrowserGt (browser, version) {
+        return this._compareBrowser(browser, '>', version)
+    }
+
+    isBrowserLtEq (browser, version) {
+        return this._compareBrowser(browser, '<=', version)
+    }
+
+    isBrowserGtEq (browser, version) {
+        return this._compareBrowser(browser, '>=', version)
+    }
+
+    _compareBrowser (browser, operator, version) {
+        if (browser !== this.detected['browser'].name) return false
+
+        let compare = {
+            '===': (a, b) => { return a === b },
+            '<': (a, b) => { return a < b },
+            '>': (a, b) => { return a > b },
+            '<=': (a, b) => { return a <= b },
+            '>=': (a, b) => { return a >= b }
+        }
+
+        let detected = this.detected['browser'].version.split('.')
+        let targeted = version.split('.')
+
+        for (let i = 0; i < detected.length; i++) {
+            let diff = detected[i].length - (targeted[i] ? targeted[i].length : 0)
+
+            while (diff > 0) {
+                targeted[i] = (targeted[i] || '') + '0'
+                diff = diff - 1
+            }
+        }
+
+        detected = parseInt(detected.join(''))
+        targeted = parseInt(targeted.join(''))
+
+        return compare[operator](detected, targeted)
+    }
+
     isType (name) {
         return this.detected && this.detected['type'].name === name
     }

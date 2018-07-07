@@ -49,11 +49,11 @@ device.isBrowser('opera')
 device.isBrowser('phantomjs')
 
 // Browser version
-// wip -> device.isBrowserEq('ie', '8')
-// wip -> device.isBrowserLt('ie', '11.1')
-// wip -> device.isBrowserGt('ie', '8.0.1')
-// wip -> device.isBrowserLtEq('ie', '9')
-// wip -> device.isBrowserGtEq('ie', '9.1')
+device.isBrowserEq('ie', '8')
+device.isBrowserLt('ie', '11.1')
+device.isBrowserGt('ie', '8.0.1')
+device.isBrowserLtEq('ie', '9')
+device.isBrowserGtEq('ie', '9.1')
 
 // Supported features
 device.isSupported('webp')
