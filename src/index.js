@@ -46,6 +46,15 @@ export default class {
         return this.detected && this.detected['mobileOs'].name === name
     }
 
+    isSupported (feature) {
+        switch (feature) {
+            case 'webp':
+                return this._isWebpSupported()
+            default:
+                return false
+        }
+    }
+
     _detectFromUa (key, defaultValue = false) {
         this.detected[key] = defaultValue
 
@@ -70,6 +79,15 @@ export default class {
 
             if (this.detected[key]) break
         }
+    }
+
+    _isWebpSupported () {
+        let canvas = document.createElement('canvas')
+        canvas.width = canvas.height = 1
+
+        return canvas.toDataURL 
+            && canvas.toDataURL('image/webp') 
+            && canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
     }
 
     _resize () {

@@ -26,10 +26,9 @@ const device = new Device()
 device.get('browser')
 device.get('browser.name')
 device.get('browser.version')
-device.get('type')
 device.get('mobileOs')
+device.get('type')
 // wip -> device.get('orientation')
-// wip -> device.get('supported')
 // wip -> device.get('virtualKeyboard')
 device.detect() // Force re-detection
 
@@ -39,13 +38,13 @@ device.detect() // Force re-detection
 
 // Browser name
 device.isBrowser('chrome')
-device.isBrowser('firefox')
-device.isBrowser('ie')
-device.isBrowser('edge')
-device.isBrowser('opera')
 device.isBrowser('safari')
+device.isBrowser('firefox')
 device.isBrowser('facebook')
 device.isBrowser('instagram')
+device.isBrowser('edge')
+device.isBrowser('ie')
+device.isBrowser('opera')
 device.isBrowser('phantomjs')
 
 // Browser version
@@ -56,8 +55,8 @@ device.isBrowser('phantomjs')
 // wip -> device.isBrowserGtEq('ie', '9.1')
 
 // Supported features
+device.isSupported('webp')
 // wip -> device.isSupported('pwa')
-// wip -> device.isSupported('webp')
 // wip -> device.isSupported('webrtc')
 
 // Device orientation
@@ -65,14 +64,14 @@ device.isBrowser('phantomjs')
 // wip -> device.isOrientation('landscape')
 
 // Mobile Operating System
-device.isMobileOs('ios')
 device.isMobileOs('android')
+device.isMobileOs('ios')
 device.isMobileOs('windows')
 
 // Device type
+device.isType('desktop')
 device.isType('mobile')
 device.isType('tablet')
-device.isType('desktop')
 device.isType('tv')
 
 // Mobile virtual keyboard
