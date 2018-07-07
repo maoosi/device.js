@@ -2,8 +2,18 @@
 
 ⚠️ Work in progress | Not ready for production
 
-> 🎲 JavaScript toolkit library to read devices information such as browser name, browser version, supported features, device orientation, operating system, and virtual keyboard.
+> 🎲 JavaScript toolkit library to read device and browser information.
 
+## Features
+
+- Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
+- Supported features `pwa, webp, webrtc`
+- Device orientation `portrait, landscape`
+- Mobile OS `android, ios, windows`
+- Virtual keyboard `active, inactive`
+
+
+## Getting started
 
 ```javascript
 // Import ES6 library
@@ -14,6 +24,8 @@ const device = new Device()
 
 // Global API methods
 device.get('browser')
+device.get('browser.name')
+device.get('browser.version')
 device.get('type')
 device.get('mobileOs')
 // wip -> device.get('orientation')

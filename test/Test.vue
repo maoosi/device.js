@@ -1,10 +1,10 @@
 <template>
     <div>
         <ul>
-            <li><strong>Browser name:</strong> {{ browser ? browser.name : 'n/a' }}</li>
-            <li><strong>Browser version:</strong> {{ browser ? browser.version : 'n/a' }}</li>
-            <li><strong>Mobile OS:</strong> {{ mobileOs ? mobileOs.name : 'n/a' }}</li>
-            <li><strong>Type:</strong> {{ type ? type.name : 'n/a' }}</li>
+            <li><strong>Browser name:</strong> {{ browserName || 'n/a' }}</li>
+            <li><strong>Browser version:</strong> {{ browserVersion || 'n/a' }}</li>
+            <li><strong>Mobile OS:</strong> {{ mobileOs || 'n/a' }}</li>
+            <li><strong>Type:</strong> {{ type || 'n/a' }}</li>
         </ul>
     </div>
 </template>
@@ -18,12 +18,16 @@ export default {
     data () {
         return {
             browser: null,
+            browserName: null,
+            browserVersion: null,
             mobileOs: null,
             type: null
         }
     },
     mounted () {
         this.browser = device.get('browser')
+        this.browserName = device.get('browser.name')
+        this.browserVersion = device.get('browser.version')
         this.mobileOs = device.get('mobileOs')
         this.type = device.get('type')
     }

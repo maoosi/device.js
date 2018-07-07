@@ -16,7 +16,22 @@ export default class {
     }
 
     get (key) {
-        return this.detected ? this.detected[key] : null
+        if (this.detected) {
+            switch (key) {
+                case 'browser':
+                    return this.detected['browser']
+                case 'browser.name':
+                    return this.detected['browser'].name
+                case 'browser.version':
+                    return this.detected['browser'].version
+                default:
+                    return typeof this.detected[key] !== 'undefined' && typeof this.detected[key].name !== 'undefined'
+                        ? this.detected[key].name
+                        : this.detected[key]
+            }
+        } else {
+            return false
+        }
     }
 
     isBrowser (name) {
@@ -42,7 +57,7 @@ export default class {
                 if (match) {
                     this.detected[key] = { name: test.name }
 
-                    if (version) {
+                    if (version && key === 'browser') {
                         if (version.length < 3) {
                             version.concat(version.length == 1 ? [0, 0] : [0])
                         }
