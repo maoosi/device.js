@@ -44,6 +44,8 @@ export default {
         })
 
         this.displayProperties()
+
+        console.log(device.isBrowserEq('chrome', '67'))
     },
     methods: {
         displayProperties () {

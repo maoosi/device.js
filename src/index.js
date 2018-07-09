@@ -27,7 +27,7 @@ export default class {
 
     destroy () {
         this._unbindEvents()
-        
+
         if (this.keyboardDetectTimeout) {
             clearTimeout(this.keyboardDetectTimeout)
             this.keyboardDetectTimeout = false
@@ -161,21 +161,19 @@ export default class {
         }
 
         let detected = this.get('browser.version').split('.')
-        let targeted = version.split('.')
+        let compared = version.split('.')
 
         for (let i = 0; i < detected.length; i++) {
-            let diff = detected[i].length - (targeted[i] ? targeted[i].length : 0)
-
-            while (diff > 0) {
-                targeted[i] = (targeted[i] || '') + '0'
-                diff = diff - 1
+            if (!compared[i]) {
+                detected[i] = '0'
+                compared[i] = '0'
             }
         }
 
         detected = parseInt(detected.join(''))
-        targeted = parseInt(targeted.join(''))
+        compared = parseInt(compared.join(''))
 
-        return compare[operator](detected, targeted)
+        return compare[operator](detected, compared)
     }
 
     _detectKeyboardStatus () {
