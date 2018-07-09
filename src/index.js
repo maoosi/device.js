@@ -6,7 +6,8 @@ export default class {
     
     constructor (options = {}) {
         this.options = {
-            autoUpdateOnResize: options.autoUpdateOnResize || true
+            refreshAfterResize: options.refreshAfterResize || true,
+            keyboardDetectDelay: options.keyboardDetectDelay || 3000
         }
 
         this.emitter = mitt()
@@ -16,7 +17,8 @@ export default class {
     }
 
     init () {
-        this._saveHeight()
+        this.isKeyboardOpen = false
+        this._detectKeyboardStatus()
         this._bindEvents()
         this.detect()
 
@@ -25,6 +27,11 @@ export default class {
 
     destroy () {
         this._unbindEvents()
+        
+        if (this.keyboardDetectTimeout) {
+            clearTimeout(this.keyboardDetectTimeout)
+            this.keyboardDetectTimeout = false
+        }
 
         return this
     }
@@ -53,10 +60,16 @@ export default class {
                     return this.detected['browser'].name
                 case 'browser.version':
                     return this.detected['browser'].version
+                case 'orientation':
+                    return this.detected['orientation']
+                case 'type':
+                    return this.detected['type'].name
+                case 'mobileOs':
+                    return this.detected['mobileOs'].name
+                case 'virtualKeyboard':
+                    return this.isKeyboardOpen ? 'active' : 'inactive'
                 default:
-                    return typeof this.detected[key] !== 'undefined' && typeof this.detected[key].name !== 'undefined'
-                        ? this.detected[key].name
-                        : this.detected[key]
+                    return false
             }
         } else {
             return false
@@ -64,68 +77,43 @@ export default class {
     }
 
     isBrowser (name) {
-        return this.detected && this.detected['browser'].name === name
+        return this.get('browser.name') === name
     }
 
     isBrowserEq (browser, version) {
-        return this._compareBrowser(browser, '===', version)
+        return this._isBrowserVersion(browser, '===', version)
     }
 
     isBrowserLt (browser, version) {
-        return this._compareBrowser(browser, '<', version)
+        return this._isBrowserVersion(browser, '<', version)
     }
 
     isBrowserGt (browser, version) {
-        return this._compareBrowser(browser, '>', version)
+        return this._isBrowserVersion(browser, '>', version)
     }
 
     isBrowserLtEq (browser, version) {
-        return this._compareBrowser(browser, '<=', version)
+        return this._isBrowserVersion(browser, '<=', version)
     }
 
     isBrowserGtEq (browser, version) {
-        return this._compareBrowser(browser, '>=', version)
-    }
-
-    _compareBrowser (browser, operator, version) {
-        if (browser !== this.detected['browser'].name) return false
-
-        let compare = {
-            '===': (a, b) => { return a === b },
-            '<': (a, b) => { return a < b },
-            '>': (a, b) => { return a > b },
-            '<=': (a, b) => { return a <= b },
-            '>=': (a, b) => { return a >= b }
-        }
-
-        let detected = this.detected['browser'].version.split('.')
-        let targeted = version.split('.')
-
-        for (let i = 0; i < detected.length; i++) {
-            let diff = detected[i].length - (targeted[i] ? targeted[i].length : 0)
-
-            while (diff > 0) {
-                targeted[i] = (targeted[i] || '') + '0'
-                diff = diff - 1
-            }
-        }
-
-        detected = parseInt(detected.join(''))
-        targeted = parseInt(targeted.join(''))
-
-        return compare[operator](detected, targeted)
+        return this._isBrowserVersion(browser, '>=', version)
     }
 
     isType (name) {
-        return this.detected && this.detected['type'].name === name
+        return this.get('type') === name
     }
 
     isMobileOs (name) {
-        return this.detected && this.detected['mobileOs'].name === name
+        return this.get('mobileOs') === name
     }
 
     isOrientation (orientation) {
-        return this.detected && this.detected['orientation'] === orientation
+        return this.get('orientation') === orientation
+    }
+
+    isVirtualKeyboard (state) {
+        return this.get('virtualKeyboard') === state
     }
 
     isSupported (feature) {
@@ -156,8 +144,79 @@ export default class {
         window.removeEventListener('resize', this.resize, false)
     }
 
-    _saveHeight () {
-        this.defaultHeight = window.innerHeight
+    _storeViewportDimensions () {
+        this.viewportWidth = window.innerWidth
+        this.viewportHeight = window.innerHeight
+    }
+
+    _isBrowserVersion (browser, operator, version) {
+        if (browser !== this.get('browser.name')) return false
+
+        let compare = {
+            '===':  (a, b) => { return a === b },
+            '<':    (a, b) => { return a < b },
+            '>':    (a, b) => { return a > b },
+            '<=':   (a, b) => { return a <= b },
+            '>=':   (a, b) => { return a >= b }
+        }
+
+        let detected = this.get('browser.version').split('.')
+        let targeted = version.split('.')
+
+        for (let i = 0; i < detected.length; i++) {
+            let diff = detected[i].length - (targeted[i] ? targeted[i].length : 0)
+
+            while (diff > 0) {
+                targeted[i] = (targeted[i] || '') + '0'
+                diff = diff - 1
+            }
+        }
+
+        detected = parseInt(detected.join(''))
+        targeted = parseInt(targeted.join(''))
+
+        return compare[operator](detected, targeted)
+    }
+
+    _detectKeyboardStatus () {
+        if (this.isType('mobile') || this.isType('tablet')) {
+
+            if (this.keyboardDetectTimeout) {
+                clearTimeout(this.keyboardDetectTimeout)
+                this.keyboardDetectTimeout = false
+            }
+
+            this.keyboardDetectTimeout = setTimeout(() => {
+                let currentWidth = window.innerWidth
+                let currentHeight = window.innerHeight
+                let isInputFocused = document.activeElement.tagName.toLowerCase() === 'input'
+
+                if (
+                    !this.isKeyboardOpen &&
+                    currentWidth === this.viewportWidth &&
+                    currentHeight < this.viewportHeight &&
+                    isInputFocused
+                ) {
+                    this.isKeyboardOpen = true
+                    this.emitter.emit('virtualKeyboardUpdate', this.get('virtualKeyboard'))
+                } else if (
+                    (this.isKeyboardOpen && !isInputFocused) ||
+                    (
+                        this.isKeyboardOpen &&
+                        isInputFocused &&
+                        currentWidth === this.viewportWidth && 
+                        currentHeight > this.viewportHeight
+                    )
+                ) {
+                    this.isKeyboardOpen = false
+                    this.emitter.emit('virtualKeyboardUpdate', this.get('virtualKeyboard'))
+                }
+
+                this.viewportWidth = currentWidth
+                this.viewportHeight = currentHeight
+            }, this.options.keyboardDetectDelay)
+
+        }
     }
 
     _detectFromUa (key, defaultValue = false) {
@@ -166,7 +225,7 @@ export default class {
         for (let test of ua[key]) {
             for (let rule of test.rules) {
                 let match = rule.exec(this.clientUA)
-                let version = match && match[1].split(/[._]/).slice(0,3)
+                let version = match && match[1] && match[1].split(/[._]/).slice(0,3)
 
                 if (match) {
                     this.detected[key] = { name: test.name }
@@ -187,7 +246,7 @@ export default class {
     }
 
     _detectOrientation () {
-        let previousOrientation = this.detected['orientation']
+        let previousOrientation = this.get('orientation')
         this.detected['orientation'] = 'landscape'
 
         if (
@@ -197,8 +256,8 @@ export default class {
             this.detected['orientation'] = 'portrait'
         }
 
-        if (previousOrientation !== this.detected['orientation']) {
-            this.emitter.emit('orientationUpdate', this.detected['orientation'])
+        if (previousOrientation !== this.get('orientation')) {
+            this.emitter.emit('orientationUpdate', this.get('orientation'))
         }
     }
 
@@ -226,12 +285,14 @@ export default class {
     }
 
     _resize () {
-        if (this.options.autoUpdateOnResize) {
+        this._detectKeyboardStatus()
+
+        if (this.options.refreshAfterResize) {
             let previousDetected = this.detected
             this.detect()
 
             if (previousDetected !== this.detected) {
-                this.emitter.emit('update')
+                this.emitter.emit('propertiesUpdate')
             }
         } else {
             this._detectOrientation()

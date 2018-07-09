@@ -6,6 +6,7 @@
             <li><strong>Mobile OS:</strong> {{ mobileOs || 'none' }}</li>
             <li><strong>Type:</strong> {{ type || 'n/a' }}</li>
             <li><strong>Orientation:</strong> {{ orientation || 'n/a' }}</li>
+            <li><strong>Virtual keyboard:</strong> {{ virtualKeyboard || 'n/a' }}</li>
             <li><strong>WebP support:</strong> {{ webp ? 'yes' : 'no' }}</li>
             <li><strong>WebRTC support:</strong> {{ webrtc ? 'yes' : 'no' }}</li>
             <li><strong>WebGL support:</strong> {{ webgl ? 'yes' : 'no' }}</li>
@@ -16,9 +17,7 @@
 <script>
 import Device from '../src/index.js'
 
-const device = new Device({
-    autoUpdateOnResize: true
-})
+const device = new Device()
 
 export default {
     data () {
@@ -31,7 +30,8 @@ export default {
             orientation: null,
             webrtc: null,
             webp: null,
-            webgl: null
+            webgl: null,
+            virtualKeyboard: null
         }
     },
     mounted () {
@@ -39,14 +39,14 @@ export default {
             this.orientation = orientation
         })
 
-        device.on('update', () => {
-            this.detect()
+        device.on('propertiesUpdate', () => {
+            this.displayProperties()
         })
 
-        this.detect()
+        this.displayProperties()
     },
     methods: {
-        detect () {
+        displayProperties () {
             this.browser = device.get('browser')
             this.browserName = device.get('browser.name')
             this.browserVersion = device.get('browser.version')
@@ -56,6 +56,7 @@ export default {
             this.webrtc = device.isSupported('webrtc')
             this.webp = device.isSupported('webp')
             this.webgl = device.isSupported('webgl')
+            this.virtualKeyboard = device.get('virtualKeyboard')
         }
     }
 }

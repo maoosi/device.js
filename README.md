@@ -2,7 +2,7 @@
 
 ⚠️ Work in progress | Not ready for production
 
-> 🎲 ES6 toolkit library to detect device and browser information.
+> 🎲 ES6 toolkit library to detect device and browser properties.
 
 
 ## Features detected
@@ -22,20 +22,22 @@ import Device from 'device.js'
 // Instantiate library
 const device = new Device()
 
-// Global API methods
+// Read device properties
 device.get('browser')
 device.get('browser.name')
 device.get('browser.version')
 device.get('mobileOs')
 device.get('type')
 device.get('orientation')
-// wip -> device.get('virtualKeyboard')
-device.detect() // Force re-detection
+device.get('virtualKeyboard')
+
+// Refresh detection of properties
+device.detect()
 
 // Events
 device.on('orientationUpdate', (orientation) => {})
-device.on('update', () => {})
-// wip -> device.on('virtualKeyboardUpdate', (state) => {})
+device.on('virtualKeyboardUpdate', (state) => {})
+device.on('propertiesUpdate', () => {})
 
 // Browser name
 device.isBrowser('chrome')
@@ -77,6 +79,6 @@ device.isType('tablet')
 device.isType('tv')
 
 // Mobile virtual keyboard
-// wip -> device.isVirtualKeyboard('active')
-// wip -> device.isVirtualKeyboard('inactive')
+device.isVirtualKeyboard('active')
+device.isVirtualKeyboard('inactive')
 ```
