@@ -2,15 +2,13 @@
 
 🧬JavaScript library to detect browser and devices properties.
 
-
 ## Features detected
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
 - Supported features `pwa, webp, webrtc, webgl`
 - Device orientation `portrait, landscape`
 - Mobile OS `android, ios, windows`
-- Virtual keyboard `active, inactive`
-
+- Mobile/Tablet keyboard `active, inactive`
 
 ## Getting started
 
@@ -78,4 +76,14 @@ device.isType('tv')
 // Mobile virtual keyboard
 device.isVirtualKeyboard('active')
 device.isVirtualKeyboard('inactive')
+```
+
+## How to run the example?
+
+First, make sure you have Vue.js Instant Prototyping service installed: [https://cli.vuejs.org/guide/prototyping.html](https://cli.vuejs.org/guide/prototyping.html)
+
+Then:
+
+```sh
+vue serve examples/Device.vue
 ```
