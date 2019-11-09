@@ -1,12 +1,13 @@
 {
-  "name": "device.js",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/maoosi/device.js.git",
-  "author": "maoosi <sylvain.simao@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "lodash.debounce": "^4.0.8",
-    "mitt": "^1.1.3"
-  }
+    "name": "device.js",
+    "description": "JavaScript library to detect browser and devices properties.",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "repository": "https://gitlab.com/maoosi/devicejs.git",
+    "author": "maoosi <hello@sylvainsimao.fr>",
+    "license": "MIT",
+    "dependencies": {
+        "lodash.debounce": "^4.0.8",
+        "mitt": "^1.2.0"
+    }
 }
