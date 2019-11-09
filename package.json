@@ -1,7 +1,7 @@
 {
     "name": "@maoosi/device.js",
     "description": "JavaScript library to detect browser and devices properties.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "src/index.js",
     "repository": "https://gitlab.com/maoosi/devicejs.git",
     "author": "maoosi <hello@sylvainsimao.fr>",

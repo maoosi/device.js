@@ -14,17 +14,17 @@
 
 ```sh
 # With npm
-npm i -g @maoosi/device.js
+npm i @maoosi/device.js
 
 # OR With yarn
-yarn global add @maoosi/device.js
+yarn add @maoosi/device.js
 ```
 
 ## 🚀 Usage
 
 ```javascript
 // Import ES6 library
-import Device from 'device.js'
+import Device from '@maoosi/device.js'
 
 // Instantiate library
 const device = new Device()
