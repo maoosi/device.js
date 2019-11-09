@@ -1,8 +1,6 @@
 # Device.js
 
-⚠️ Work in progress | Not ready for production
-
-> 🎲 ES6 toolkit library to detect device and browser properties.
+🧬JavaScript library to detect browser and devices properties.
 
 
 ## Features detected
@@ -61,7 +59,6 @@ device.isBrowserGtEq('ie', '9.1')
 device.isSupported('webp')
 device.isSupported('webrtc')
 device.isSupported('webgl')
-// wip -> device.isSupported('pwa')
 
 // Device orientation
 device.isOrientation('portrait')
