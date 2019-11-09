@@ -1,5 +1,5 @@
 {
-    "name": "device.js",
+    "name": "@maoosi/device.js",
     "description": "JavaScript library to detect browser and devices properties.",
     "version": "1.0.0",
     "main": "src/index.js",

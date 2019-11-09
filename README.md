@@ -2,7 +2,7 @@
 
 🧬JavaScript library to detect browser and devices properties.
 
-## Features detected
+## ✔️ Features detected
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
 - Supported features `pwa, webp, webrtc, webgl`
@@ -10,9 +10,20 @@
 - Mobile OS `android, ios, windows`
 - Mobile/Tablet keyboard `active, inactive`
 
-## Getting started
+## 📦 Installation
+
+```sh
+# With npm
+npm i -g @maoosi/device.js
+
+# OR With yarn
+yarn global add @maoosi/device.js
+```
+
+## 🚀 Usage
 
 ```javascript
+// Import ES6 library
 import Device from 'device.js'
 
 // Instantiate library
@@ -78,12 +89,21 @@ device.isVirtualKeyboard('active')
 device.isVirtualKeyboard('inactive')
 ```
 
-## How to run the example?
+## 🧪 How to run the example?
 
 First, make sure you have Vue.js Instant Prototyping service installed: [https://cli.vuejs.org/guide/prototyping.html](https://cli.vuejs.org/guide/prototyping.html)
 
-Then:
+Then from terminal:
 
 ```sh
 vue serve examples/Device.vue
 ```
+
+## 🤝 Contributing
+
+Contributions, issues and feature requests are welcome.
+
+## 📝 License
+
+Copyright © 2019 [maoosi](https://gitlab.com/maoosi).<br />
+This project is [MIT](./LICENSE) licensed.
