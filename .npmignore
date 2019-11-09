@@ -14,3 +14,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# Project
+examples
+.editorconfig

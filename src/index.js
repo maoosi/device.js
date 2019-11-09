@@ -3,21 +3,25 @@ import mitt from 'mitt'
 import ua from './ua.js'
 
 export default class {
-    
-    constructor (options = {}) {
+
+    constructor(options = {}) {
         this.options = {
             refreshAfterResize: options.refreshAfterResize || true,
-            keyboardDetectDelay: options.keyboardDetectDelay || 3000
+            keyboardDetectDelayMin: options.keyboardDetectDelayMin || 150,
+            keyboardDetectDelayMax: options.keyboardDetectDelayMax || 1000
         }
 
         this.emitter = mitt()
+        this.instanciated = false
         this.init()
 
         return this
     }
 
-    init () {
+    init() {
+        this.instanciated = true
         this.isKeyboardOpen = false
+        this._storeViewportDimensions()
         this._detectKeyboardStatus()
         this._bindEvents()
         this.detect()
@@ -25,7 +29,7 @@ export default class {
         return this
     }
 
-    destroy () {
+    destroy() {
         this._unbindEvents()
 
         if (this.keyboardDetectTimeout) {
@@ -33,16 +37,18 @@ export default class {
             this.keyboardDetectTimeout = false
         }
 
+        this.instanciated = false
+
         return this
     }
 
-    detect () {
+    detect() {
         this.detected = []
         this.clientUA =
             navigator.userAgent.toLowerCase() ||
             navigator.vendor.toLowerCase() ||
             window.opera.toLowerCase()
-        
+
         this._detectFromUa('browser')
         this._detectFromUa('mobileOs')
         this._detectFromUa('type', { name: 'desktop' })
@@ -51,7 +57,7 @@ export default class {
         return this
     }
 
-    get (key) {
+    get(key) {
         if (this.detected) {
             switch (key) {
                 case 'browser':
@@ -76,47 +82,47 @@ export default class {
         }
     }
 
-    isBrowser (name) {
+    isBrowser(name) {
         return this.get('browser.name') === name
     }
 
-    isBrowserEq (browser, version) {
+    isBrowserEq(browser, version) {
         return this._isBrowserVersion(browser, '===', version)
     }
 
-    isBrowserLt (browser, version) {
+    isBrowserLt(browser, version) {
         return this._isBrowserVersion(browser, '<', version)
     }
 
-    isBrowserGt (browser, version) {
+    isBrowserGt(browser, version) {
         return this._isBrowserVersion(browser, '>', version)
     }
 
-    isBrowserLtEq (browser, version) {
+    isBrowserLtEq(browser, version) {
         return this._isBrowserVersion(browser, '<=', version)
     }
 
-    isBrowserGtEq (browser, version) {
+    isBrowserGtEq(browser, version) {
         return this._isBrowserVersion(browser, '>=', version)
     }
 
-    isType (name) {
+    isType(name) {
         return this.get('type') === name
     }
 
-    isMobileOs (name) {
+    isMobileOs(name) {
         return this.get('mobileOs') === name
     }
 
-    isOrientation (orientation) {
+    isOrientation(orientation) {
         return this.get('orientation') === orientation
     }
 
-    isVirtualKeyboard (state) {
+    isVirtualKeyboard(state) {
         return this.get('virtualKeyboard') === state
     }
 
-    isSupported (feature) {
+    isSupported(feature) {
         switch (feature) {
             case 'webp':
                 return Boolean(this._isWebpSupported())
@@ -132,7 +138,7 @@ export default class {
     on(...args) { return this.emitter.on(...args) }
     off(...args) { return this.emitter.off(...args) }
 
-    _bindEvents () {
+    _bindEvents() {
         this.resize = debounce(() => {
             this._resize()
         }, 100)
@@ -140,24 +146,24 @@ export default class {
         window.addEventListener('resize', this.resize, false)
     }
 
-    _unbindEvents () {
+    _unbindEvents() {
         window.removeEventListener('resize', this.resize, false)
     }
 
-    _storeViewportDimensions () {
+    _storeViewportDimensions() {
         this.viewportWidth = window.innerWidth
         this.viewportHeight = window.innerHeight
     }
 
-    _isBrowserVersion (browser, operator, version) {
+    _isBrowserVersion(browser, operator, version) {
         if (browser !== this.get('browser.name')) return false
 
         let compare = {
-            '===':  (a, b) => { return a === b },
-            '<':    (a, b) => { return a < b },
-            '>':    (a, b) => { return a > b },
-            '<=':   (a, b) => { return a <= b },
-            '>=':   (a, b) => { return a >= b }
+            '===': (a, b) => { return a === b },
+            '<': (a, b) => { return a < b },
+            '>': (a, b) => { return a > b },
+            '<=': (a, b) => { return a <= b },
+            '>=': (a, b) => { return a >= b }
         }
 
         let detected = this.get('browser.version').split('.')
@@ -176,54 +182,71 @@ export default class {
         return compare[operator](detected, compared)
     }
 
-    _detectKeyboardStatus () {
-        if (this.isType('mobile') || this.isType('tablet')) {
+    _testKeyBoardStatus({ retryAfter } = false) {
+        let currentWidth = window.innerWidth
+        let currentHeight = window.innerHeight
+        let isInputFocused = document.activeElement.tagName.toLowerCase() === 'input'
 
+        if (
+            !this.isKeyboardOpen &&
+            currentWidth === this.viewportWidth &&
+            currentHeight < this.viewportHeight &&
+            isInputFocused
+        ) {
+            this.isKeyboardOpen = true
+            this.emitter.emit('virtualKeyboardUpdate', this.get('virtualKeyboard'))
+        } else if (
+            (this.isKeyboardOpen && !isInputFocused) ||
+            (
+                this.isKeyboardOpen &&
+                isInputFocused &&
+                currentWidth === this.viewportWidth &&
+                currentHeight > this.viewportHeight
+            )
+        ) {
+            this.isKeyboardOpen = false
+            this.emitter.emit('virtualKeyboardUpdate', this.get('virtualKeyboard'))
+        }
+
+        this.viewportWidth = currentWidth
+        this.viewportHeight = currentHeight
+
+        if (retryAfter) {
             if (this.keyboardDetectTimeout) {
                 clearTimeout(this.keyboardDetectTimeout)
                 this.keyboardDetectTimeout = false
             }
 
             this.keyboardDetectTimeout = setTimeout(() => {
-                let currentWidth = window.innerWidth
-                let currentHeight = window.innerHeight
-                let isInputFocused = document.activeElement.tagName.toLowerCase() === 'input'
-
-                if (
-                    !this.isKeyboardOpen &&
-                    currentWidth === this.viewportWidth &&
-                    currentHeight < this.viewportHeight &&
-                    isInputFocused
-                ) {
-                    this.isKeyboardOpen = true
-                    this.emitter.emit('virtualKeyboardUpdate', this.get('virtualKeyboard'))
-                } else if (
-                    (this.isKeyboardOpen && !isInputFocused) ||
-                    (
-                        this.isKeyboardOpen &&
-                        isInputFocused &&
-                        currentWidth === this.viewportWidth && 
-                        currentHeight > this.viewportHeight
-                    )
-                ) {
-                    this.isKeyboardOpen = false
-                    this.emitter.emit('virtualKeyboardUpdate', this.get('virtualKeyboard'))
-                }
-
-                this.viewportWidth = currentWidth
-                this.viewportHeight = currentHeight
-            }, this.options.keyboardDetectDelay)
-
+                if (this.instanciated) this._testKeyBoardStatus()
+            }, retryAfter)
         }
     }
 
-    _detectFromUa (key, defaultValue = false) {
+    _detectKeyboardStatus() {
+        if (this.isType('mobile') || this.isType('tablet')) {
+            if (this.keyboardDetectTimeout) {
+                clearTimeout(this.keyboardDetectTimeout)
+                this.keyboardDetectTimeout = false
+            }
+
+            this.keyboardDetectTimeout = setTimeout(() => {
+                if (this.instanciated) {
+                    this._testKeyBoardStatus({
+                        retryAfter: this.options.keyboardDetectDelayMax - this.options.keyboardDetectDelayMin
+                    })
+                }
+            }, this.options.keyboardDetectDelayMin)
+        }
+    }
+
+    _detectFromUa(key, defaultValue = false) {
         this.detected[key] = defaultValue
 
         for (let test of ua[key]) {
             for (let rule of test.rules) {
                 let match = rule.exec(this.clientUA)
-                let version = match && match[1] && match[1].split(/[._]/).slice(0,3)
+                let version = match && match[1] && match[1].split(/[._]/).slice(0, 3)
 
                 if (match) {
                     this.detected[key] = { name: test.name }
@@ -234,16 +257,12 @@ export default class {
                         }
                         this.detected[key]['version'] = version.join('.')
                     }
-
-                    break
                 }
             }
-
-            if (this.detected[key]) break
         }
     }
 
-    _detectOrientation () {
+    _detectOrientation() {
         let previousOrientation = this.get('orientation')
         this.detected['orientation'] = 'landscape'
 
@@ -259,16 +278,16 @@ export default class {
         }
     }
 
-    _isWebpSupported () {
+    _isWebpSupported() {
         let canvas = document.createElement('canvas')
         canvas.width = canvas.height = 1
 
-        return canvas.toDataURL 
-            && canvas.toDataURL('image/webp') 
-            && canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
+        return canvas.toDataURL &&
+            canvas.toDataURL('image/webp') &&
+            canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
     }
 
-    _isWebRtcSupported () {
+    _isWebRtcSupported() {
         return navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
             navigator.mozGetUserMedia ||
@@ -276,13 +295,13 @@ export default class {
             window.RTCPeerConnection
     }
 
-    _isWebGlSupported () {
+    _isWebGlSupported() {
         let canvas = document.createElement('canvas')
         let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
         return gl && gl instanceof WebGLRenderingContext
     }
 
-    _resize () {
+    _resize() {
         this._detectKeyboardStatus()
 
         if (this.options.refreshAfterResize) {
