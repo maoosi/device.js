@@ -185,7 +185,8 @@ export default class {
     _testKeyBoardStatus({ retryAfter } = false) {
         let currentWidth = window.innerWidth
         let currentHeight = window.innerHeight
-        let isInputFocused = document.activeElement.tagName.toLowerCase() === 'input'
+        let activeElement = document.activeElement.tagName.toLowerCase()
+        let isInputFocused = activeElement === 'input' || activeElement === 'textarea'
 
         if (
             !this.isKeyboardOpen &&
