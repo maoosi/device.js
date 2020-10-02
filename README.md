@@ -1,102 +1,80 @@
 # Device.js
 
-🧬JavaScript library to detect browser and devices properties.
+🧬 Reactive utility library to detects browser and device properties.
 
 ## ✔️ Features detected
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
-- Supported features `pwa, webp, webrtc, webgl`
+- Browser features `webp, webrtc, webgl`
 - Device orientation `portrait, landscape`
-- Mobile OS `android, ios, windows`
-- Mobile/Tablet keyboard `active, inactive`
+- Device type `desktop, mobile, tablet, tv`
+- Device OS `android, ios, windows, macos`
+- Mobile keyboard `open, close`
+- Viewport dimensions `width, height`
 
 ## 📦 Installation
 
 ```sh
-# With npm
-npm i @maoosi/device.js
-
-# OR With yarn
 yarn add @maoosi/device.js
 ```
 
 ## 🚀 Usage
 
 ```javascript
-// Import ES6 library
-import Device from '@maoosi/device.js'
-
-// Instantiate library
-const device = new Device()
-
-// Read device properties
-device.get('browser')
-device.get('browser.name')
-device.get('browser.version')
-device.get('mobileOs')
-device.get('type')
-device.get('orientation')
-device.get('virtualKeyboard')
-
-// Refresh detection of properties
-device.detect()
-
-// Events
-device.on('orientationUpdate', (orientation) => {})
-device.on('virtualKeyboardUpdate', (state) => {})
-device.on('propertiesUpdate', () => {})
-
-// Browser name
-device.isBrowser('chrome')
-device.isBrowser('safari')
-device.isBrowser('firefox')
-device.isBrowser('facebook')
-device.isBrowser('instagram')
-device.isBrowser('edge')
-device.isBrowser('ie')
-device.isBrowser('opera')
-device.isBrowser('phantomjs')
-
-// Browser version
-device.isBrowserEq('ie', '8')
-device.isBrowserLt('ie', '11.1')
-device.isBrowserGt('ie', '8.0.1')
-device.isBrowserLtEq('ie', '9')
-device.isBrowserGtEq('ie', '9.1')
-
-// Supported features
-device.isSupported('webp')
-device.isSupported('webrtc')
-device.isSupported('webgl')
-
-// Device orientation
-device.isOrientation('portrait')
-device.isOrientation('landscape')
-
-// Mobile Operating System
-device.isMobileOs('android')
-device.isMobileOs('ios')
-device.isMobileOs('windows')
-
-// Device type
-device.isType('desktop')
-device.isType('mobile')
-device.isType('tablet')
-device.isType('tv')
-
-// Mobile virtual keyboard
-device.isVirtualKeyboard('active')
-device.isVirtualKeyboard('inactive')
+import { device } from '@maoosi/device.js'
 ```
 
-## 🧪 How to run the example?
+`device` returns a reactive proxied object that can be observed:
+
+```typescript
+interface device {
+    deviceOS: string | null
+    deviceType: string | null
+    deviceOrientation: string | null
+    browser: string | null
+    browserVersion: string | null
+    viewportHeight: number | null
+    viewportWidth: number | null
+    isKeyboardOpen: boolean | null
+    isBrowserEvergreen: boolean | null
+    isSupportedWebP: boolean | null
+    isSupportedWebGL: boolean | null
+    isSupportedWebRTC: boolean | null
+}
+```
+
+Example with Vue.js:
+
+> `deviceInfo` is reactive, meaning Vue.js can observe its change and update the view in real-time
+
+```html
+<template>
+    <ul>
+        <li v-for="(propValue, propName) in deviceInfo" :key="prop">
+            <strong>{{ propName }}:</strong> {{ propValue || 'n/a' }}
+        </li>
+    </ul>
+</template>
+
+<script>
+import { device } from '@maoosi/device.js'
+
+export default {
+    data() {
+        return { deviceInfo: device }
+    }
+}
+</script>
+```
+
+## 🧪 Run the playground
 
 First, make sure you have Vue.js Instant Prototyping service installed: [https://cli.vuejs.org/guide/prototyping.html](https://cli.vuejs.org/guide/prototyping.html)
 
 Then from terminal:
 
 ```sh
-vue serve examples/Device.vue
+yarn playground
 ```
 
 ## 🤝 Contributing
@@ -105,5 +83,6 @@ Contributions, issues and feature requests are welcome.
 
 ## 📝 License
 
-Copyright © 2019 [maoosi](https://gitlab.com/maoosi).<br />
+Copyright © 2020 [maoosi](https://gitlab.com/maoosi).
+
 This project is [MIT](./LICENSE) licensed.

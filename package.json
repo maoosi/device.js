@@ -1,13 +1,32 @@
 {
     "name": "@maoosi/device.js",
-    "description": "JavaScript library to detect browser and devices properties.",
-    "version": "1.0.1",
-    "main": "src/index.js",
-    "repository": "https://gitlab.com/maoosi/devicejs.git",
+    "description": "Reactive utility library to detects browser and device properties.",
+    "version": "2.0.0-beta.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "repository": "https://github.com/maoosi/device.js.git",
     "author": "maoosi <hello@sylvainsimao.fr>",
     "license": "MIT",
+    "scripts": {
+        "build": "webpack",
+        "dev": "webpack --watch",
+        "playground": "vue serve playground/App.vue"
+    },
     "dependencies": {
-        "lodash.debounce": "^4.0.8",
-        "mitt": "^1.2.0"
+        "@vue/reactivity": "^3.0.0",
+        "lodash.throttle": "^4.1.1"
+    },
+    "devDependencies": {
+        "@types/jest": "^26.0.14",
+        "@types/lodash": "^4.14.161",
+        "@types/lodash.throttle": "^4.1.6",
+        "@types/webrtc": "^0.0.26",
+        "jest": "^26.4.2",
+        "ts-jest": "^26.4.1",
+        "ts-loader": "^8.0.4",
+        "typescript": "^4.0.3",
+        "webpack": "^4.44.2",
+        "webpack-cli": "^3.3.12",
+        "webpack-node-externals": "^2.5.2"
     }
 }

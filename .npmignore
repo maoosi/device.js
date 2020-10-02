@@ -16,5 +16,5 @@ yarn-error.log*
 *.sw*
 
 # Project
-examples
+playground
 .editorconfig
