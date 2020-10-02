@@ -1,6 +1,6 @@
-# Device.js
+# 🧬 Device.js
 
-🧬 Reactive utility library to detects browser and device properties.
+Reactive utility library to detects browser and device properties.
 
 ## ✔️ Features detected
 
@@ -50,7 +50,7 @@ Example with Vue.js:
 ```html
 <template>
     <ul>
-        <li v-for="(propValue, propName) in deviceInfo" :key="prop">
+        <li v-for="(propValue, propName) in deviceInfo" :key="`${propName}-${propValue}`">
             <strong>{{ propName }}:</strong> {{ propValue || 'n/a' }}
         </li>
     </ul>
