@@ -2,16 +2,17 @@ import { reactive } from '@vue/reactivity'
 import throttle from 'lodash.throttle'
 const uaConfig = require('./ua.json')
 
-// Main
 class DeviceJS {
     public device: DeviceProps
     private options: DeviceJSOptions
     private resizeFunc: any
+    private viewportHeightMemory: number | null
+    private viewportWidthMemory: number | null
 
-    // Defaults
     constructor(options?:DeviceJSUserOptions) {
         this.options = {
-            watch: options && options.watch || false
+            watch: options && options.watch || false,
+            refreshRate: options && options.refreshRate || 200
         }
 
         this.device = reactive({
@@ -38,7 +39,9 @@ class DeviceJS {
             isSupportedWebRTC: null,
         })
 
-        this.resizeFunc = throttle(() => this.refreshProps(), 250)
+        this.viewportHeightMemory = null
+        this.viewportWidthMemory = null
+        this.resizeFunc = throttle(() => this.refreshProps(), this.options.refreshRate)
 
         if (this.options.watch) {
             this.init()
@@ -47,7 +50,6 @@ class DeviceJS {
         return this
     }
 
-    // Init all
     public init() {
         if (window) {
             this.refreshProps()
@@ -57,7 +59,6 @@ class DeviceJS {
         return this
     }
 
-    // Destroy all
     public destroy() {
         if (window) {
             window.removeEventListener('resize', this.resizeFunc, true)
@@ -66,19 +67,27 @@ class DeviceJS {
         return this
     }
 
-    // Refresh all device props
     private refreshProps() {
+        // detect user agent first
         this.detectUserAgent()
+
+        // detect properties that require on user agent
         this.detectOrientation()
         this.detectEvergreenBrowser()
         this.detectWebP()
         this.detectWebRTC()
         this.detectWebGL()
+
+        // delect viewport dimension
+        this.viewportWidthMemory = this.device.viewportWidth
+        this.viewportHeightMemory = this.device.viewportHeight
         this.device.viewportWidth = window.innerWidth
         this.device.viewportHeight = window.innerHeight
+
+        // detect keyboard last
+        this.detectKeyboardStatus()
     }
 
-    // Read user agent
     private detectUserAgent() {
         const detected:any = {
             browser: { name: null, version: null },
@@ -120,7 +129,6 @@ class DeviceJS {
         this.device.deviceType = detected.deviceType
     }
 
-    // Device orientation
     private detectOrientation() {
         let orientation = 'landscape'
 
@@ -134,14 +142,34 @@ class DeviceJS {
         this.device.deviceOrientation = orientation
     }
 
-    // Evergreen browser
+    private detectKeyboardStatus() {
+        const isCompatibleDevice = this.device.deviceType
+            && ['mobile', 'tablet'].includes(this.device.deviceType)
+        const isActiveElement = document.activeElement
+            && document.activeElement.tagName.toLowerCase() 
+            || null
+        const isInputFocused = isActiveElement
+            && ['input', 'textarea'].includes(isActiveElement)
+        const isHeightReduced = this.viewportHeightMemory
+            && this.viewportWidthMemory
+            && this.device.viewportWidth
+            && this.device.viewportHeight
+            && this.device.viewportWidth === this.viewportWidthMemory
+            && this.device.viewportHeight < this.viewportHeightMemory
+
+        if (isCompatibleDevice && isHeightReduced && isInputFocused) {
+            this.device.isKeyboardOpen = true
+        } else {
+            this.device.isKeyboardOpen = false
+        }
+    }
+
     private detectEvergreenBrowser() {
         this.device.isBrowserEvergreen = this.device.browser
             && ['chrome', 'safari', 'edge', 'firefox', 'opera'].includes(this.device.browser) 
             || null
     }
 
-    // WebP image format
     private detectWebP() {
         const canvas = document.createElement('canvas')
         canvas.width = canvas.height = 1
@@ -152,7 +180,6 @@ class DeviceJS {
             || null
     }
 
-    // Web RTC
     private detectWebRTC() {
         /// <reference types="webrtc" />
         this.device.isSupportedWebRTC = typeof navigator.getUserMedia !== 'undefined'
@@ -162,8 +189,7 @@ class DeviceJS {
             || typeof window.RTCPeerConnection !== 'undefined'
             || null
     }
-        
-    // WebGL
+
     private detectWebGL() {
         const canvas = document.createElement('canvas')
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
@@ -195,7 +221,6 @@ class DeviceJS {
     }
 }
 
-// Interfaces
 interface DeviceProps {
     deviceOS: string | null
     deviceType: string | null
@@ -210,19 +235,23 @@ interface DeviceProps {
     isSupportedWebGL: boolean | null
     isSupportedWebRTC: boolean | null
 }
+
 interface DeviceJSOptions {
     watch: boolean
+    refreshRate: number
 }
+
 interface DeviceJSUserOptions {
     watch?: boolean
+    refreshRate?: number
 }
+
 declare global {
     interface Window {
         opera: any
     }
 }
 
-// Auto-start
 const instance = new DeviceJS({ watch: true })
 const device = instance.device
 const disableOverscroll = () => instance.disableOverscroll()
@@ -232,7 +261,6 @@ const enableDoubleTapZoom = () => instance.enableDoubleTapZoom()
 const disableToolbarAutohide = () => instance.disableToolbarAutohide()
 const enableToolbarAutohide = () => instance.enableToolbarAutohide()
 
-// Exports
 export {
     device,
     disableOverscroll,

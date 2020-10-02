@@ -1,7 +1,7 @@
 <template>
     <ul>
         <li v-for="(propValue, propName) in deviceInfo" :key="`${propName}-${propValue}`">
-            <strong>{{ propName }}:</strong> {{ propValue || 'n/a' }}
+            <strong>{{ propName }}:</strong> {{ propValue !== null ? propValue : 'n/a' }}
         </li>
     </ul>
 </template>
