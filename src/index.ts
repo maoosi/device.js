@@ -6,8 +6,6 @@ class DeviceJS {
     public device: DeviceProps
     private options: DeviceJSOptions
     private resizeFunc: any
-    private viewportHeightMemory: number | null
-    private viewportWidthMemory: number | null
 
     constructor(options?:DeviceJSUserOptions) {
         this.options = {
@@ -30,8 +28,8 @@ class DeviceJS {
             viewportWidth: null,
         
             // utility states
-            isKeyboardOpen: null,
             isBrowserEvergreen: null,
+            isPWA: null,
         
             // browser features
             isSupportedWebP: null,
@@ -39,8 +37,6 @@ class DeviceJS {
             isSupportedWebRTC: null,
         })
 
-        this.viewportHeightMemory = null
-        this.viewportWidthMemory = null
         this.resizeFunc = throttle(() => this.refreshProps(), this.options.refreshRate)
 
         if (this.options.watch) {
@@ -77,15 +73,11 @@ class DeviceJS {
         this.detectWebP()
         this.detectWebRTC()
         this.detectWebGL()
+        this.detectPWA()
 
         // delect viewport dimension
-        this.viewportWidthMemory = this.device.viewportWidth
-        this.viewportHeightMemory = this.device.viewportHeight
         this.device.viewportWidth = window.innerWidth
         this.device.viewportHeight = window.innerHeight
-
-        // detect keyboard last
-        this.detectKeyboardStatus()
     }
 
     private detectUserAgent() {
@@ -142,32 +134,10 @@ class DeviceJS {
         this.device.deviceOrientation = orientation
     }
 
-    private detectKeyboardStatus() {
-        const isCompatibleDevice = this.device.deviceType
-            && ['mobile', 'tablet'].includes(this.device.deviceType)
-        const isActiveElement = document.activeElement
-            && document.activeElement.tagName.toLowerCase() 
-            || null
-        const isInputFocused = isActiveElement
-            && ['input', 'textarea'].includes(isActiveElement)
-        const isHeightReduced = this.viewportHeightMemory
-            && this.viewportWidthMemory
-            && this.device.viewportWidth
-            && this.device.viewportHeight
-            && this.device.viewportWidth === this.viewportWidthMemory
-            && this.device.viewportHeight < this.viewportHeightMemory
-
-        if (isCompatibleDevice && isHeightReduced && isInputFocused) {
-            this.device.isKeyboardOpen = true
-        } else {
-            this.device.isKeyboardOpen = false
-        }
-    }
-
     private detectEvergreenBrowser() {
         this.device.isBrowserEvergreen = this.device.browser
             && ['chrome', 'safari', 'edge', 'firefox', 'opera'].includes(this.device.browser) 
-            || null
+            || false
     }
 
     private detectWebP() {
@@ -177,7 +147,7 @@ class DeviceJS {
         this.device.isSupportedWebP = canvas.toDataURL
             && canvas.toDataURL('image/webp')
             && canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
-            || null
+            || false
     }
 
     private detectWebRTC() {
@@ -187,37 +157,20 @@ class DeviceJS {
             || typeof navigator.mozGetUserMedia !== 'undefined'
             || typeof navigator.msGetUserMedia !== 'undefined'
             || typeof window.RTCPeerConnection !== 'undefined'
-            || null
     }
 
     private detectWebGL() {
         const canvas = document.createElement('canvas')
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
-        this.device.isSupportedWebGL = gl && gl instanceof WebGLRenderingContext
+        this.device.isSupportedWebGL = !!window.WebGLRenderingContext
+            && typeof (
+                canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+            ) !== 'undefined'
     }
 
-    // Overscroll
-    public disableOverscroll() {
-        return this
-    }
-    public enableOverscroll() {
-        return this
-    }
-
-    // Double-tap zoom
-    public disableDoubleTapZoom() {
-        return this
-    }
-    public enableDoubleTapZoom() {
-        return this
-    }
-
-    // Auto-hide bottom toolbar on iOS
-    public disableToolbarAutohide() {
-        return this
-    }
-    public enableToolbarAutohide() {
-        return this
+    private detectPWA() {
+        this.device.isPWA = (window.matchMedia('(display-mode: standalone)').matches)
+            || (window.navigator.standalone)
+            || document.referrer.includes('android-app://')
     }
 }
 
@@ -229,8 +182,8 @@ interface DeviceProps {
     browserVersion: string | null
     viewportHeight: number | null
     viewportWidth: number | null
-    isKeyboardOpen: boolean | null
     isBrowserEvergreen: boolean | null
+    isPWA: boolean | null
     isSupportedWebP: boolean | null
     isSupportedWebGL: boolean | null
     isSupportedWebRTC: boolean | null
@@ -250,23 +203,14 @@ declare global {
     interface Window {
         opera: any
     }
+    interface Navigator {
+        standalone: any
+    }
 }
 
 const instance = new DeviceJS({ watch: true })
 const device = instance.device
-const disableOverscroll = () => instance.disableOverscroll()
-const enableOverscroll = () => instance.enableOverscroll()
-const disableDoubleTapZoom = () => instance.disableDoubleTapZoom()
-const enableDoubleTapZoom = () => instance.enableDoubleTapZoom()
-const disableToolbarAutohide = () => instance.disableToolbarAutohide()
-const enableToolbarAutohide = () => instance.enableToolbarAutohide()
 
 export {
-    device,
-    disableOverscroll,
-    enableOverscroll,
-    disableDoubleTapZoom,
-    enableDoubleTapZoom,
-    disableToolbarAutohide,
-    enableToolbarAutohide,
+    device
 }

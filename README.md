@@ -1,15 +1,14 @@
 # 🧬 Device.js
 
-Reactive utility library to detects browser and device properties.
+Reactive utility library to detects essential browser and device properties.
 
 ## ✔️ Features detected
 
 - Browser name & version `chrome, safari, firefox, facebook, instagram, edge, ie, opera, phantomjs`
-- Browser features `webp, webrtc, webgl`
+- Browser features `webp, webrtc, webgl, pwa`
 - Device orientation `portrait, landscape`
 - Device type `desktop, mobile, tablet, tv`
 - Device OS `android, ios, windows, macos`
-- Mobile keyboard `open, close`
 - Viewport dimensions `width, height`
 
 ## 📦 Installation
@@ -35,8 +34,8 @@ interface device {
     browserVersion: string | null
     viewportHeight: number | null
     viewportWidth: number | null
-    isKeyboardOpen: boolean | null
     isBrowserEvergreen: boolean | null
+    isPWA: boolean | null
     isSupportedWebP: boolean | null
     isSupportedWebGL: boolean | null
     isSupportedWebRTC: boolean | null
