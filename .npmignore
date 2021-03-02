@@ -16,5 +16,9 @@ yarn-error.log*
 *.sw*
 
 # Project
-playground
+playground/
+src/
 .editorconfig
+.eslintignore
+index.html
+vue.config.js

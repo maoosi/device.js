@@ -1,7 +1,7 @@
 {
     "name": "@maoosi/device.js",
     "description": "Reactive library to observe essential browser and device properties.",
-    "version": "2.0.0-beta.1",
+    "version": "2.0.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "repository": "https://github.com/maoosi/device.js.git",
@@ -11,7 +11,8 @@
         "prebuild": "rm -rf dist/",
         "build": "esbuild src/index.ts --define:process.env.NODE_ENV=\\\"production\\\" --bundle --minify --keep-names --format=cjs --platform=browser --target=es6 --outfile=dist/index.js && tsc src/*.ts --outDir dist/ --declaration --emitDeclarationOnly --lib \"DOM,ES2020\"",
         "dev": "esbuild src/index.ts --bundle --keep-names --format=cjs --platform=browser --target=es6 --outfile=dist/index.js --watch",
-        "playground": "vue serve playground/App.vue"
+        "playground": "vue serve playground/App.vue",
+        "prepare": "yarn build"
     },
     "dependencies": {
         "@vue/reactivity": "^3.0.7",

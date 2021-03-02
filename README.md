@@ -2,7 +2,7 @@
 
 **Reactive library to observe essential browser and device properties.**
 
-> ⚠️ Version 2 is not backward compatible with version 1. Please refer to the examples below for usage.
+> ⚠️ Version 2 is not backward compatible with version 1. Check the [Changelog](CHANGELOG.md) for more details.
 
 ## ✔️ Features detected
 
