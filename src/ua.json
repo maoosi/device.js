@@ -1,0 +1,115 @@
+{
+    "browser": [
+        {
+            "name": "chrome",
+            "regex": [
+                "(?!chrom.*opr)chrom(?:e|ium)\/([0-9\\.]+)(:?\\s|$)",
+                "crios\/([0-9\\.]+)(:?\\s|$)"
+            ]
+        },
+        {
+            "name": "safari",
+            "regex": [
+                "version\/([0-9\\._]+).*safari"
+            ]
+        },
+        {
+            "name": "firefox",
+            "regex": [
+                "firefox\/([0-9\\.]+)(?:\\s|$)",
+                "fxios\/([0-9\\.]+)"
+            ]
+        },
+        {
+            "name": "facebook",
+            "regex": [
+                "fbav\/([0-9\\.]+)"
+            ]
+        },
+        {
+            "name": "instagram",
+            "regex":[
+                "instagram\\ ([0-9\\.]+)"
+            ]
+        },
+        {
+            "name": "edge",
+            "regex": [
+                "edge\/([0-9\\._]+)"
+            ]
+        },
+        {
+            "name": "ie",
+            "regex": [
+                "trident\/7\\.0.*rv\\:([0-9\\.]+).*\\).*gecko$",
+                "msie\\s([0-9\\.]+);.*trident\/[4-7].0",
+                "msie\\s(7\\.0)"
+            ]
+        },
+        {
+            "name": "opera",
+            "regex": [
+                "opera\/([0-9\\.]+)(?:\\s|$)",
+                "opr\/([0-9\\.]+)(:?\\s|$)$"
+            ]
+        },
+        {
+            "name": "phantomjs",
+            "regex": [
+                "phantomjs\/([0-9\\.]+)(:?\\s|$)"
+            ]
+        }
+    ],
+    "deviceOS": [
+        {
+            "name": "android",
+            "regex": [
+                "android"
+            ]
+        },
+        {
+            "name": "ios",
+            "regex": [
+                "ip(hone|od|ad)"
+            ]
+        },
+        {
+            "name": "macos",
+            "regex": [
+                "macintosh"
+            ]
+        },
+        {
+            "name": "windows",
+            "regex": [
+                "(windows)(?!\\smobile)"
+            ]
+        },
+        {
+            "name": "windowsmobile",
+            "regex": [
+                "(windows\\smobile)"
+            ]
+        }
+    ],
+    "deviceType": [
+        {
+            "name": "mobile",
+            "regex": [
+                "(iphone|ipod|((?:android)?.*?mobile)|blackberry|nokia)"
+            ]
+        },
+        {
+            "name": "tablet",
+            "regex": [
+                "(ipad|android(?!.*mobile)|tablet)"
+            ]
+        },
+        {
+            "name": "tv",
+            "regex": [
+                "googletv|sonydtv"
+            ]
+        }
+    ]
+}

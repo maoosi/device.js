@@ -1,13 +1,28 @@
 {
     "name": "@maoosi/device.js",
-    "description": "JavaScript library to detect browser and devices properties.",
-    "version": "1.0.1",
-    "main": "src/index.js",
-    "repository": "https://gitlab.com/maoosi/devicejs.git",
+    "description": "Reactive library to observe essential browser and device properties.",
+    "version": "2.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "repository": "https://github.com/maoosi/device.js.git",
     "author": "maoosi <hello@sylvainsimao.fr>",
     "license": "MIT",
+    "scripts": {
+        "prebuild": "rm -rf dist/",
+        "build": "esbuild src/index.ts --define:process.env.NODE_ENV=\\\"production\\\" --bundle --minify --keep-names --format=cjs --platform=browser --target=es6 --outfile=dist/index.js && tsc src/*.ts --outDir dist/ --declaration --emitDeclarationOnly --lib \"DOM,ES2020\"",
+        "dev": "esbuild src/index.ts --bundle --keep-names --format=cjs --platform=browser --target=es6 --outfile=dist/index.js --watch",
+        "playground": "vue serve playground/App.vue",
+        "prepare": "yarn build"
+    },
     "dependencies": {
-        "lodash.debounce": "^4.0.8",
-        "mitt": "^1.2.0"
+        "@vue/reactivity": "^3.0.7",
+        "lodash-es": "^4.17.21"
+    },
+    "devDependencies": {
+        "@types/lodash-es": "^4.17.4",
+        "@types/node": "^14.14.31",
+        "@types/webrtc": "^0.0.26",
+        "esbuild": "^0.8.54",
+        "typescript": "^4.2.2"
     }
 }
