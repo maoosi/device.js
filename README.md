@@ -1,6 +1,8 @@
 # 🧬 Device.js
 
-Reactive utility library to detects essential browser and device properties.
+**Reactive library to observe essential browser and device properties.**
+
+> ⚠️ Version 2 is not backward compatible with version 1. Please refer to the examples below for usage.
 
 ## ✔️ Features detected
 
@@ -19,11 +21,19 @@ yarn add @maoosi/device.js
 
 ## 🚀 Usage
 
+**Basic usage:**
+
+This code will log `viewportWidth` after every viewport resize, throttled to 200 ms:
+
 ```javascript
-import { device } from '@maoosi/device.js'
+import { device, watch } from '@maoosi/device.js'
+
+watch(async() => {
+    console.log(device.viewportWidth)
+})
 ```
 
-`device` returns a reactive proxied object that can be observed:
+`device` is a reactive proxied object that can be observed and exposes the following properties:
 
 ```typescript
 interface device {
@@ -42,17 +52,13 @@ interface device {
 }
 ```
 
-Example with Vue.js:
+**Using Vue.js:**
 
-> `deviceInfo` is reactive, meaning Vue.js can observe its change and update the view in real-time
+Since `device` is a reactive proxied object, Vue.js can observe changes without needing to use the `watch` method:
 
 ```html
 <template>
-    <ul>
-        <li v-for="(propValue, propName) in deviceInfo" :key="`${propName}-${propValue}`">
-            <strong>{{ propName }}:</strong> {{ propValue !== null ? propValue : 'n/a' }}
-        </li>
-    </ul>
+    <pre>{{ deviceInfo }}</pre>
 </template>
 
 <script>
@@ -70,7 +76,7 @@ export default {
 
 First, make sure you have Vue.js Instant Prototyping service installed: [https://cli.vuejs.org/guide/prototyping.html](https://cli.vuejs.org/guide/prototyping.html)
 
-Then from terminal:
+Then from your terminal:
 
 ```sh
 yarn playground
@@ -82,6 +88,6 @@ Contributions, issues and feature requests are welcome.
 
 ## 📝 License
 
-Copyright © 2020 [maoosi](https://gitlab.com/maoosi).
+Copyright © 2021 [maoosi](https://gitlab.com/maoosi).
 
 This project is [MIT](./LICENSE) licensed.
