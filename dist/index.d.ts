@@ -20,5 +20,5 @@ declare global {
         standalone: any;
     }
 }
-declare const device: DeviceProps;
-export { device };
+export declare const device: DeviceProps;
+export {};

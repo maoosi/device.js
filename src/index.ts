@@ -1,5 +1,6 @@
 import { reactive } from '@vue/reactivity'
-import throttle from 'lodash.throttle'
+import throttle from 'lodash-es/throttle'
+
 const uaConfig = require('./ua.json')
 
 class DeviceJS {
@@ -49,6 +50,13 @@ class DeviceJS {
     public init() {
         if (window) {
             this.refreshProps()
+
+            // detect static features
+            this.detectWebP()
+            this.detectWebRTC()
+            this.detectWebGL()
+            this.detectPWA()
+
             window.addEventListener('resize', this.resizeFunc, true)
         }
 
@@ -70,10 +78,6 @@ class DeviceJS {
         // detect properties that require on user agent
         this.detectOrientation()
         this.detectEvergreenBrowser()
-        this.detectWebP()
-        this.detectWebRTC()
-        this.detectWebGL()
-        this.detectPWA()
 
         // delect viewport dimension
         this.device.viewportWidth = window.innerWidth
@@ -209,8 +213,5 @@ declare global {
 }
 
 const instance = new DeviceJS({ watch: true })
-const device = instance.device
 
-export {
-    device
-}
+export const device = instance.device
