@@ -21,4 +21,5 @@ declare global {
     }
 }
 export declare const device: DeviceProps;
+export declare const watch: (callback: () => any) => import("@vue/reactivity").ReactiveEffect<any>;
 export {};

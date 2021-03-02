@@ -1,20 +1,15 @@
-import { reactive } from '@vue/reactivity'
+import { reactive, readonly, effect } from '@vue/reactivity'
 import throttle from 'lodash-es/throttle'
 
 const uaConfig = require('./ua.json')
 
 class DeviceJS {
     public device: DeviceProps
-    private options: DeviceJSOptions
+    private reactiveDevice: DeviceProps
     private resizeFunc: any
 
-    constructor(options?:DeviceJSUserOptions) {
-        this.options = {
-            watch: options && options.watch || false,
-            refreshRate: options && options.refreshRate || 200
-        }
-
-        this.device = reactive({
+    constructor() {
+        this.reactiveDevice = reactive({
             // device info
             deviceOS: null,
             deviceType: null,
@@ -38,13 +33,11 @@ class DeviceJS {
             isSupportedWebRTC: null,
         })
 
-        this.resizeFunc = throttle(() => this.refreshProps(), this.options.refreshRate)
+        this.resizeFunc = throttle(() => this.refreshProps(), 200)
 
-        if (this.options.watch) {
-            this.init()
-        }
+        this.device = readonly(this.reactiveDevice)
 
-        return this
+        return this.init()
     }
 
     public init() {
@@ -71,6 +64,10 @@ class DeviceJS {
         return this
     }
 
+    public watch(callback:() => any) {
+        return effect(callback)
+    }
+
     private refreshProps() {
         // detect user agent first
         this.detectUserAgent()
@@ -80,8 +77,8 @@ class DeviceJS {
         this.detectEvergreenBrowser()
 
         // delect viewport dimension
-        this.device.viewportWidth = window.innerWidth
-        this.device.viewportHeight = window.innerHeight
+        this.reactiveDevice.viewportWidth = window.innerWidth
+        this.reactiveDevice.viewportHeight = window.innerHeight
     }
 
     private detectUserAgent() {
@@ -119,28 +116,28 @@ class DeviceJS {
             }
         }
 
-        this.device.browser = detected.browser.name
-        this.device.browserVersion = detected.browser.version
-        this.device.deviceOS = detected.deviceOS
-        this.device.deviceType = detected.deviceType
+        this.reactiveDevice.browser = detected.browser.name
+        this.reactiveDevice.browserVersion = detected.browser.version
+        this.reactiveDevice.deviceOS = detected.deviceOS
+        this.reactiveDevice.deviceType = detected.deviceType
     }
 
     private detectOrientation() {
         let orientation = 'landscape'
 
-        if (this.device.deviceType 
-            && ['mobile', 'tablet'].includes(this.device.deviceType)
+        if (this.reactiveDevice.deviceType 
+            && ['mobile', 'tablet'].includes(this.reactiveDevice.deviceType)
             && window.matchMedia('(orientation: portrait)').matches
         ) {
             orientation = 'portrait'
         }
 
-        this.device.deviceOrientation = orientation
+        this.reactiveDevice.deviceOrientation = orientation
     }
 
     private detectEvergreenBrowser() {
-        this.device.isBrowserEvergreen = this.device.browser
-            && ['chrome', 'safari', 'edge', 'firefox', 'opera'].includes(this.device.browser) 
+        this.reactiveDevice.isBrowserEvergreen = this.reactiveDevice.browser
+            && ['chrome', 'safari', 'edge', 'firefox', 'opera'].includes(this.reactiveDevice.browser) 
             || false
     }
 
@@ -148,7 +145,7 @@ class DeviceJS {
         const canvas = document.createElement('canvas')
         canvas.width = canvas.height = 1
 
-        this.device.isSupportedWebP = canvas.toDataURL
+        this.reactiveDevice.isSupportedWebP = canvas.toDataURL
             && canvas.toDataURL('image/webp')
             && canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
             || false
@@ -156,7 +153,7 @@ class DeviceJS {
 
     private detectWebRTC() {
         /// <reference types="webrtc" />
-        this.device.isSupportedWebRTC = typeof navigator.getUserMedia !== 'undefined'
+        this.reactiveDevice.isSupportedWebRTC = typeof navigator.getUserMedia !== 'undefined'
             || typeof navigator.webkitGetUserMedia !== 'undefined'
             || typeof navigator.mozGetUserMedia !== 'undefined'
             || typeof navigator.msGetUserMedia !== 'undefined'
@@ -165,14 +162,14 @@ class DeviceJS {
 
     private detectWebGL() {
         const canvas = document.createElement('canvas')
-        this.device.isSupportedWebGL = !!window.WebGLRenderingContext
+        this.reactiveDevice.isSupportedWebGL = !!window.WebGLRenderingContext
             && typeof (
                 canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
             ) !== 'undefined'
     }
 
     private detectPWA() {
-        this.device.isPWA = (window.matchMedia('(display-mode: standalone)').matches)
+        this.reactiveDevice.isPWA = (window.matchMedia('(display-mode: standalone)').matches)
             || (window.navigator.standalone)
             || document.referrer.includes('android-app://')
     }
@@ -193,16 +190,6 @@ interface DeviceProps {
     isSupportedWebRTC: boolean | null
 }
 
-interface DeviceJSOptions {
-    watch: boolean
-    refreshRate: number
-}
-
-interface DeviceJSUserOptions {
-    watch?: boolean
-    refreshRate?: number
-}
-
 declare global {
     interface Window {
         opera: any
@@ -212,6 +199,7 @@ declare global {
     }
 }
 
-const instance = new DeviceJS({ watch: true })
+const instance = new DeviceJS()
 
 export const device = instance.device
+export const watch = (callback: () => any) => instance.watch(callback)

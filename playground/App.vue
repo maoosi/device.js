@@ -9,11 +9,23 @@
 </template>
 
 <script>
-import { device } from '../dist'
+import { device, watch } from '../dist'
 
 export default {
     data() {
-        return { deviceInfo: device }
+        return {
+            deviceInfo: false
+        }
+    },
+    mounted() {
+        watch(async() => {
+            this.deviceInfo = this.copyDeep(device)
+        })
+    },
+    methods: {
+        copyDeep(object) {
+            return JSON.parse(JSON.stringify(object))
+        }
     }
 }
 </script>
